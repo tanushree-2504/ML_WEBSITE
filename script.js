@@ -65,8 +65,10 @@ async function runDiagnosis() {
         const rows = text.split("\n").slice(1);
         const row = rows[patientIndex].split(",");
 
-        // Take columns f1–f30 only (skip Name and expected_label)
+        // Features = f1–f30 only
         const features = row.slice(1, 31).map(Number);
+
+        // Label = last column
         const expectedLabel = Number(row[31]);
 
         try {
@@ -96,5 +98,3 @@ async function runDiagnosis() {
 function loadDashboard() {
     document.getElementById("dashboardTable").innerHTML = "<p>Dashboard feature coming soon...</p>";
 }
-
-

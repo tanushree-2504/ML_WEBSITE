@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS so Netlify frontend can connect
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # later restrict to your Netlify domain
@@ -15,8 +15,8 @@ app.add_middleware(
 
 # Input model: 30 features + optional label
 class InputModel(BaseModel):
-    data: list[float]   # strictly the 30 features
-    expected_label: int | None = None  # optional, if provided in CSV
+    data: list[float]   # must be exactly 30 floats
+    expected_label: int | None = None
 
 @app.get("/")
 def home():
@@ -24,9 +24,7 @@ def home():
 
 @app.post("/predict")
 def predict(input: InputModel):
-    # Example dummy logic: sum of features
     score = sum(input.data)
-
     prediction = 1 if score > 100 else 0
     confidence = 0.90
     reliability = "High" if confidence > 0.8 else "Medium"
