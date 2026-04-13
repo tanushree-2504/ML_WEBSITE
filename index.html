@@ -21,19 +21,25 @@
         <button onclick="showDashboard()">View Dashboard</button>
     </div>
 
-    <!-- Sections -->
+    <!-- Dataset Detection -->
     <div id="dataset" class="section" style="display:none;">
         <h2>Upload Dataset</h2>
-        <input type="file" id="csvFile" accept=".csv">
+        <input type="file" id="csvFile" accept=".csv" onchange="loadPatients(this.files[0])">
+        <br><br>
+        <label for="patientSelect">Select Patient:</label>
+        <select id="patientSelect"></select>
+        <br><br>
         <button onclick="runDiagnosis()">Run Diagnosis</button>
         <div id="result"></div>
     </div>
 
+    <!-- Image Detection -->
     <div id="image" class="section" style="display:none;">
         <h2>Image Detection</h2>
         <p>📷 Coming Soon...</p>
     </div>
 
+    <!-- Dashboard -->
     <div id="dashboard" class="section" style="display:none;">
         <h2>Patient Results Dashboard</h2>
         <div id="dashboardTable"></div>
