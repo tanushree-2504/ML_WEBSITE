@@ -2,47 +2,163 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>TrustAware Diagnostics Portal</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrustAware Diagnostics</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
 </head>
 
 <body>
-    <!-- Splash Screen -->
+
+    <!-- SPLASH SCREEN -->
     <div id="splash">
-        <h1>🩺 TrustAware Diagnostics Portal</h1>
-        <p>Prediction with Confidence, Reliability & Error Analysis</p>
+        <div class="splash-inner">
+            <div class="splash-icon">🔬</div>
+            <h1 class="splash-title">TrustAware<br /><span>Diagnostics</span></h1>
+            <p class="splash-sub">AI-powered breast cancer detection</p>
+            <div class="splash-bar-wrap">
+                <div class="splash-bar" id="splashBar"></div>
+            </div>
+            <p class="splash-loading" id="splashText">Initialising systems...</p>
+        </div>
     </div>
 
-    <!-- Main Menu -->
-    <div id="menu" style="display:none;">
-        <button onclick="showDataset()">Detection by Dataset</button>
-        <button onclick="showImage()">Detection by Image (Coming Soon)</button>
-        <button onclick="showDashboard()">View Dashboard</button>
-    </div>
+    <!-- MAIN APP -->
+    <div id="app" class="hidden">
 
-    <!-- Dataset Detection -->
-    <div id="dataset" class="section" style="display:none;">
-        <h2>Upload Dataset</h2>
-        <input type="file" id="csvFile" accept=".csv" onchange="loadPatients(this.files[0])">
-        <br><br>
-        <label for="patientSelect">Select Patient:</label>
-        <select id="patientSelect"></select>
-        <br><br>
-        <button onclick="runDiagnosis()">Run Diagnosis</button>
-        <div id="result"></div>
-    </div>
+        <!-- SIDEBAR NAV -->
+        <nav id="sidebar">
+            <div class="nav-brand">
+                <span class="brand-icon">🔬</span>
+                <span class="brand-name">TrustAware</span>
+            </div>
+            <ul class="nav-links">
+                <li><button class="nav-btn active" data-section="dataset">
+                        <span class="nav-icon">📊</span> Dataset Detection
+                    </button></li>
+                <li><button class="nav-btn" data-section="image">
+                        <span class="nav-icon">📷</span> Image Detection
+                    </button></li>
+                <li><button class="nav-btn" data-section="dashboard">
+                        <span class="nav-icon">📋</span> Dashboard
+                    </button></li>
+            </ul>
+            <div class="nav-footer">
+                <span class="status-dot"></span> Backend connected
+            </div>
+        </nav>
 
-    <!-- Image Detection -->
-    <div id="image" class="section" style="display:none;">
-        <h2>Image Detection</h2>
-        <p>📷 Coming Soon...</p>
-    </div>
+        <!-- CONTENT AREA -->
+        <main id="content">
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="section" style="display:none;">
-        <h2>Patient Results Dashboard</h2>
-        <div id="dashboardTable"></div>
+            <!-- DATASET SECTION -->
+            <section id="section-dataset" class="section active">
+                <div class="section-header">
+                    <h2>Dataset Detection</h2>
+                    <p>Upload a patient CSV and run AI diagnosis on any record</p>
+                </div>
+
+                <div class="card upload-card">
+                    <label class="upload-label" for="csvInput">
+                        <div class="upload-icon">📂</div>
+                        <div class="upload-text">
+                            <strong>Click to upload CSV</strong>
+                            <span>or drag and drop</span>
+                        </div>
+                        <input type="file" id="csvInput" accept=".csv" />
+                    </label>
+                    <div id="fileInfo" class="file-info hidden"></div>
+                </div>
+
+                <div class="card select-card" id="selectCard" style="display:none">
+                    <label for="patientSelect">Select Patient</label>
+                    <div class="select-wrap">
+                        <select id="patientSelect">
+                            <option value="">-- Choose a patient --</option>
+                        </select>
+                    </div>
+                    <button id="runBtn" class="btn-run">
+                        <span>Run Diagnosis</span> <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+
+                <div id="resultCard" class="card result-card hidden">
+                    <div class="result-header">
+                        <h3>Diagnosis Result</h3>
+                        <span id="resultBadge" class="badge"></span>
+                    </div>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Prediction</span>
+                            <span id="resPrediction" class="result-val big"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Confidence</span>
+                            <span id="resConfidence" class="result-val"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Reliability</span>
+                            <span id="resReliability" class="result-val"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Expected Label</span>
+                            <span id="resExpected" class="result-val"></span>
+                        </div>
+                    </div>
+                    <div id="resWarning" class="warning-box hidden"></div>
+                </div>
+
+                <div id="errorBox" class="error-box hidden"></div>
+
+                <div id="loadingBox" class="loading-box hidden">
+                    <div class="spinner"></div>
+                    <span>Analysing patient data...</span>
+                </div>
+            </section>
+
+            <!-- IMAGE SECTION -->
+            <section id="section-image" class="section hidden">
+                <div class="section-header">
+                    <h2>Image Detection</h2>
+                    <p>Upload medical images for visual AI analysis</p>
+                </div>
+                <div class="card coming-soon-card">
+                    <div class="cs-icon">📷</div>
+                    <h3>Coming Soon</h3>
+                    <p>Image-based detection will be available in the next release.</p>
+                </div>
+            </section>
+
+            <!-- DASHBOARD SECTION -->
+            <section id="section-dashboard" class="section hidden">
+                <div class="section-header">
+                    <h2>Dashboard</h2>
+                    <p>View and track all past diagnosis results</p>
+                </div>
+                <div class="card coming-soon-card">
+                    <div class="cs-icon">📋</div>
+                    <h3>Dashboard Coming Soon</h3>
+                    <p>Saved patient results will appear here in an interactive table.</p>
+                </div>
+                <table id="dashboardTable" class="dash-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Prediction</th>
+                            <th>Confidence</th>
+                            <th>Reliability</th>
+                            <th>Expected</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardBody"></tbody>
+                </table>
+            </section>
+
+        </main>
     </div>
 
     <script src="script.js"></script>
