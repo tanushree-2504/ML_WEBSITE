@@ -1,46 +1,38 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import pickle
-import numpy as np
-
-model = pickle.load(open("model.pkl", "rb"))
-scaler = pickle.load(open("scaler.pkl", "rb"))
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-class InputData(BaseModel):
-    data: list
+# Enable CORS so Netlify frontend can connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # you can restrict to your Netlify domain later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Input model for prediction
+class InputModel(BaseModel):
+    data: list[float]
 
 @app.get("/")
 def home():
     return {"message": "API Running"}
 
 @app.post("/predict")
-def predict(input_data: InputData):
-    try:
-        values = np.array(input_data.data).reshape(1, -1)
-        values = scaler.transform(values)
+def predict(input: InputModel):
+    # Replace this dummy logic with your ML model
+    prediction = 1  # pretend benign
+    confidence = 0.95
+    reliability = "High"
+    warning = "No issues"
 
-        prediction = model.predict(values)[0]
-        confidence = max(model.predict_proba(values)[0])
-
-        if confidence > 0.85:
-            reliability = "High"
-        elif confidence > 0.65:
-            reliability = "Medium"
-        else:
-            reliability = "Low"
-
-        warning = "None"
-        if reliability == "Low":
-            warning = "⚠ Low confidence prediction"
-
-        return {
-            "prediction": int(prediction),
-            "confidence": float(confidence),
-            "reliability": reliability,
-            "warning": warning
-        }
-    except Exception as e:
-        return {"error": str(e)}
+    return {
+        "prediction": prediction,
+        "confidence": confidence,
+        "reliability": reliability,
+        "warning": warning
+    }
 
