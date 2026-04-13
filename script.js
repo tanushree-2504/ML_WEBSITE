@@ -65,13 +65,15 @@ async function runDiagnosis() {
         const rows = text.split("\n").slice(1);
         const row = rows[patientIndex].split(",");
 
+        // Take columns f1–f30 only (skip Name and expected_label)
         const features = row.slice(1, 31).map(Number);
+        const expectedLabel = Number(row[31]);
 
         try {
             const response = await fetch("https://ml-website-r0z3.onrender.com/predict", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: features })
+                body: JSON.stringify({ data: features, expected_label: expectedLabel })
             });
 
             const result = await response.json();
@@ -81,6 +83,7 @@ async function runDiagnosis() {
                 <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(2)}%</p>
                 <p><strong>Reliability:</strong> ${result.reliability}</p>
                 <p><strong>Warning:</strong> ${result.warning}</p>
+                <p><strong>Expected Label:</strong> ${result.expected_label}</p>
             `;
         } catch (error) {
             document.getElementById("result").innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
